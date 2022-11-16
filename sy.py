@@ -1,4 +1,5 @@
-from parse import ops, ParseError
+from parse import ops, ParseError, Expr
+from types_ext import return_typed
 
 
 def to_postfix(expr):
@@ -7,7 +8,7 @@ def to_postfix(expr):
     buf = ""
 
     for (idx, c) in enumerate(expr):
-        if c.isdigit():
+        if c.isalnum() or c == '.':
             buf += str(c)
             if idx == len(expr) - 1:
                 output.insert(0, buf)
@@ -28,10 +29,14 @@ def to_postfix(expr):
         elif c == '(':
             op_stack.append(c)
         elif c == ')':
+            if not op_stack:
+                raise ParseError('Mismatched Parentheses')
+
             while op_stack[-1] != '(':
+                output.insert(0, op_stack.pop())
                 if not op_stack:
                     raise ParseError('Mismatched Parentheses')
-                output.insert(0, op_stack.pop())
+
             if op_stack[-1] != '(':
                 raise ParseError('Mismatched Parentheses')
             op_stack.pop()
@@ -48,3 +53,20 @@ def to_postfix(expr):
 
     output.reverse()
     return output
+
+
+def postfix_to_ast(expr):
+    tree = []
+    for tok in expr:
+        if tok in ops:
+            op = ops[tok]
+            arg = op[3]
+
+            if len(tree) < arg:
+                raise ParseError('Invalid operands')
+            args = tree[-arg:]
+            tree = tree[:-arg]
+            tree.append(Expr(tok, args, t='op'))
+        else:
+            tree.append(return_typed(tok))
+    return tree[0]

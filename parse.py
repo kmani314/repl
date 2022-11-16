@@ -1,7 +1,8 @@
 class Expr:
-    def __init__(self, sym, children=None):
+    def __init__(self, sym, children=None, t=None):
         self.sym = sym
         self.children = children
+        self.t = t
 
     def __repr__(self):
         return f'Expr({self.sym}, [{", ".join([c.__repr__() for c in self.children]) if self.children else ""}])'
@@ -27,13 +28,18 @@ def exp(a, b):
     return Expr(a.sym ** b.sym)
 
 
+def neg(a):
+    return Expr(-a.sym)
+
 # pyfunc, precedence (lower is first), 0 for left-associative and 1 for right
 ops = {
-    '*': (mul, 2, 0),
-    '/': (div, 2, 0),
-    '+': (add, 3, 0),
-    '-': (sub, 3, 0),
-    '^': (exp, 1, 1),
+    '*': (mul, 2, 0, 2),
+    '/': (div, 2, 0, 2),
+    '+': (add, 3, 0, 2),
+    '-': (sub, 3, 0, 2),
+    '^': (exp, 1, 1, 2),
+    'u': (neg, 3, 0, 1),
+    '=': (None, -1, 0, 2)
     # ')': (None, 0),
     # '(': (None, 0),
 }
@@ -74,15 +80,11 @@ def parse_expr(expr):
     if tok:
         return Expr(int(tok))
 
-def eval_expr(p_expr):
 
-    # no children, so for now must be self-evaluating
-    if not p_expr.children:
+def eval_expr(p_expr):
+    # if it's a literal
+    if not p_expr.t == 'op':
         return p_expr
 
-    t_op = ops[p_expr.sym]
+    t_op = ops[p_expr.sym][0]
     return t_op(*[eval_expr(c) for c in p_expr.children])
-
-def eval_line(s):
-    # return eval_expr(parse_expr(s))
-    return parse_expr(s)

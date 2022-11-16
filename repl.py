@@ -1,10 +1,12 @@
-from parse import ParseError, eval_line
-from sy import to_postfix
+from parse import ParseError, eval_expr
+from sy import to_postfix, postfix_to_ast
 
 
 def read_line(line):
     try:
-        return to_postfix(line)
+        pf = to_postfix(line)
+        ast = postfix_to_ast(pf)
+        return eval_expr(ast).sym
     except ParseError as e:
         return str(e)
 
