@@ -6,8 +6,8 @@ class Env:
         self.bindings = {}
 
     def bind(self, sym, val):
-        if sym in self.bindings:
-            raise ExecError(f'Duplicate bindings on symbol \'{sym}\'')
+        # if sym in self.bindings:
+        #     raise ExecError(f'Duplicate bindings on symbol \'{sym}\'')
 
         self.bindings[sym] = val
 

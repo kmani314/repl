@@ -19,6 +19,8 @@ def read_line(line):
 
 
 def do_loop():
+    # entries = []
+
     try:
         while ...:
             print("repl> ", end="")

@@ -1,5 +1,6 @@
 from errors import ParseError, ExecError
 from env import Env
+import math
 
 
 class Expr:
@@ -33,7 +34,7 @@ def exp(a, b, env):
 
 
 def neg(a, env):
-    return Expr(-a.sym)
+    return Expr(-a.sym, t=a.t)
 
 
 def bind(sym, val, env):
@@ -43,6 +44,11 @@ def bind(sym, val, env):
     return sym
 
 
+def fact(sym, env):
+    # if sym.t != 'int':
+    #     raise ExecError(f'Invalid Type \'{sym.t}\' for factorial')
+    return Expr(math.factorial(sym.sym), t='int')
+
 # pyfunc, precedence (lower is first), 0 for left-associative and 1 for right, number of operands
 ops = {
     '*': (mul, 2, 0, 2),
@@ -50,6 +56,7 @@ ops = {
     '+': (add, 3, 0, 2),
     '-': (sub, 3, 0, 2),
     '^': (exp, 1, 1, 2),
+    '!': (fact, 2, 0, 1),
     '_': (neg, 3, 1, 1),
     '=': (bind, 10, 1, 2)
 }
