@@ -1,5 +1,6 @@
-from parse import ops, ParseError, Expr
+from parse import ops, Expr
 from types_ext import return_typed
+from errors import ParseError
 
 
 def to_postfix(expr):
@@ -30,25 +31,25 @@ def to_postfix(expr):
             op_stack.append(c)
         elif c == ')':
             if not op_stack:
-                raise ParseError('Mismatched Parentheses')
+                raise ParseError(f'Mismatched \'{c}\'')
 
             while op_stack[-1] != '(':
                 output.insert(0, op_stack.pop())
                 if not op_stack:
-                    raise ParseError('Mismatched Parentheses')
+                    raise ParseError(f'Mismatched \'{c}\'')
 
             if op_stack[-1] != '(':
-                raise ParseError('Mismatched Parentheses')
+                raise ParseError(f'Mismatched \'{c}\'')
             op_stack.pop()
         elif c == ' ':
             ...
         else:
-            raise ParseError('Unknown token')
+            raise ParseError(f'Unknown token \'{c}\'')
 
     while op_stack:
         c = op_stack.pop()
         if c == '(':
-            raise ParseError('Mismatched Parentheses')
+            raise ParseError(f'Mismatched \'{c}\'')
         output.insert(0, c)
 
     output.reverse()
@@ -63,7 +64,7 @@ def postfix_to_ast(expr):
             arg = op[3]
 
             if len(tree) < arg:
-                raise ParseError('Invalid operands')
+                raise ParseError(f'Invalid use of \'{tok}\'')
             args = tree[-arg:]
             tree = tree[:-arg]
             tree.append(Expr(tok, args, t='op'))
