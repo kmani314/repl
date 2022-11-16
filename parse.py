@@ -6,29 +6,42 @@ class Expr:
     def __repr__(self):
         return f'Expr({self.sym}, [{", ".join([c.__repr__() for c in self.children]) if self.children else ""}])'
 
+
 def add(a, b):
     return Expr(a.sym + b.sym)
+
 
 def sub(a, b):
     return Expr(a.sym - b.sym)
 
+
 def mul(a, b):
     return Expr(a.sym * b.sym)
+
 
 def div(a, b):
     return Expr(a.sym / b.sym)
 
 
+def exp(a, b):
+    return Expr(a.sym ** b.sym)
+
+
+# pyfunc, precedence (lower is first), 0 for left-associative and 1 for right
 ops = {
-    '*': mul,
-    '/': div,
-    '+': add,
-    '-': sub,
+    '*': (mul, 2, 0),
+    '/': (div, 2, 0),
+    '+': (add, 3, 0),
+    '-': (sub, 3, 0),
+    '^': (exp, 1, 1),
+    # ')': (None, 0),
+    # '(': (None, 0),
 }
 
 
 class ParseError(Exception):
     pass
+
 
 def parse_expr(expr):
     tok = ""

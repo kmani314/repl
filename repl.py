@@ -1,10 +1,13 @@
 from parse import ParseError, eval_line
+from sy import to_postfix
+
 
 def read_line(line):
     try:
-        return eval_line(line)
+        return to_postfix(line)
     except ParseError as e:
         return str(e)
+
 
 def do_loop():
     try:
