@@ -18,15 +18,11 @@ def to_postfix(expr):
             buf = ""
 
         if c in ops:
-            print(op_stack)
             while op_stack \
-                    and op_stack[-1] != '(':
-
-                if ops[op_stack[-1]][1] == ops[c][1]:
-                    if ops[c][2] == 0:
-                        output.insert(0, op_stack.pop())
-                elif ops[op_stack[-1]][1] < ops[c][1]:
-                    output.insert(0, op_stack.pop())
+                    and op_stack[-1] != '(' \
+                    and (ops[op_stack[-1]][1] < ops[c][1]
+                         or (ops[op_stack[-1]][1] == ops[c][1] and ops[c][2] == 0)):
+                output.insert(0, op_stack.pop())
 
             op_stack.append(c)
         elif c == '(':
